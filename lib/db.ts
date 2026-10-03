@@ -1,10 +1,11 @@
 import { neon } from '@neondatabase/serverless'
 import { Pool } from 'pg'
 import { DEFAULT_CATEGORIES } from './format'
+import { MIGRATIONS } from './migrations'
 
 type Row = Record<string, any>
-type Query = PromiseLike<Row[]>
-type Sql = {
+export type Query = PromiseLike<Row[]>
+export type Sql = {
   (strings: TemplateStringsArray, ...values: unknown[]): Query
   transaction(queries: Query[]): Promise<unknown>
 }
@@ -108,10 +109,31 @@ export function ensureSchema() {
       await sql`INSERT INTO categories (name)
         SELECT unnest(${[...DEFAULT_CATEGORIES]}::text[])
         WHERE NOT EXISTS (SELECT 1 FROM categories)`
+      await runMigrations(sql)
     })().catch((err) => {
       schemaReady = null
       throw err
     })
   }
   return schemaReady
+}
+
+// Versioned schema changes on top of the baseline above. Each runs once, in order,
+// inside a transaction holding an advisory lock so concurrent cold starts don't race.
+async function runMigrations(sql: Sql) {
+  await sql`CREATE TABLE IF NOT EXISTS schema_migrations (
+    version INT PRIMARY KEY,
+    name TEXT NOT NULL,
+    applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`
+  const done = new Set((await sql`SELECT version FROM schema_migrations`).map((r) => r.version))
+  for (const m of MIGRATIONS) {
+    if (done.has(m.version)) continue
+    await sql.transaction([
+      sql`SELECT pg_advisory_xact_lock(7243001)`,
+      ...m.up(sql),
+      sql`INSERT INTO schema_migrations (version, name) VALUES (${m.version}, ${m.name})
+          ON CONFLICT (version) DO NOTHING`,
+    ])
+  }
 }

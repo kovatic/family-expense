@@ -1,0 +1,6 @@
+From: SBI Test <alerts@example.sbi.co.in>
+Subject: Credit alert
+Date: Thu, 01 Oct 2026 10:15:00 +0530
+
+Dear Customer, your A/c no. XXXXXXXX1234 is credited by Rs.2,500.00 on 01-10-2026
+by transfer from RAVI KUMAR (UPI Ref No 612345678904).

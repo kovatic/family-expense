@@ -1,0 +1,5 @@
+From: HDFC Test <alerts@example.hdfcbank.net>
+Subject: Debit alert
+Date: Fri, 02 Oct 2026 07:30:00 +0530
+
+Rs.75.00 debited from a/c **1234 on 02-10-26.

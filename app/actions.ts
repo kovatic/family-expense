@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { db, ensureSchema } from '@/lib/db'
 import { endSession, requireAdmin, requireUser, startSession } from '@/lib/auth'
 import { DATE_RE, MONTH_RE, monthWeeks } from '@/lib/dates'
+import { learnFromExpense } from '@/lib/import/merchant-rules'
 
 export type FormState = { error?: string; ok?: string } | undefined
 
@@ -206,6 +207,8 @@ export async function saveExpenseAction(_: FormState, fd: FormData): Promise<For
     await sql`
       UPDATE expenses SET amount = ${amount}, spent_on = ${spentOn}, category = ${category}, note = ${note}
       WHERE id = ${id}`
+    // Re-categorising an imported expense teaches the merchant rule for future imports.
+    if (!same) await learnFromExpense(id, category)
   } else {
     if (!known) return { error: 'Pick a category' }
     await sql`

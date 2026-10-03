@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { logoutAction } from '@/app/actions'
 import { requireUser } from '@/lib/auth'
 import { ChangePasswordForm } from '@/components/UserForms'
@@ -15,6 +16,14 @@ export default async function AccountPage() {
           </div>
           <div className="muted small">@{me.username}</div>
         </div>
+
+        <Link href="/bank" className="card row between" style={{ marginTop: 12 }}>
+          <span>
+            <strong>Bank auto-import</strong>
+            <div className="muted small">Import SBI / HDFC alerts from Gmail</div>
+          </span>
+          <span className="muted">›</span>
+        </Link>
 
         <h2>Change password</h2>
         <ChangePasswordForm />

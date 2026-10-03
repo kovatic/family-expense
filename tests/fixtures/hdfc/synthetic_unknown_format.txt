@@ -1,0 +1,5 @@
+From: HDFC Test <news@example.hdfcbank.net>
+Subject: Your monthly newsletter
+Date: Thu, 01 Oct 2026 09:00:00 +0530
+
+Read about new features in the HDFC Bank app this month.

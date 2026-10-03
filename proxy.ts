@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { SESSION_COOKIE, verifySession } from '@/lib/jwt'
 
-const PUBLIC_PATHS = ['/login', '/setup']
+// The cron and SMS endpoints check their own secrets.
+const PUBLIC_PATHS = ['/login', '/setup', '/api/cron/gmail-sync', '/api/sms/ingest']
 
 // Optimistic check only; pages and actions verify the user against the DB.
 export async function proxy(request: NextRequest) {

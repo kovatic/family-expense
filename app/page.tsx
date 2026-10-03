@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { requireUser } from '@/lib/auth'
-import { db } from '@/lib/db'
+import { db, ensureSchema } from '@/lib/db'
 import {
   dayLabel,
   monthLabel,
@@ -47,8 +47,9 @@ export default async function Dashboard({
   const last = weeks[weeks.length - 1].end
   const todayStr = today()
 
+  await ensureSchema()
   const sql = db()
-  const [budgetRows, weekRows, expenseRows] = await Promise.all([
+  const [budgetRows, weekRows, expenseRows, [review]] = await Promise.all([
     sql`SELECT amount::float8 AS amount FROM budgets WHERE month = ${month}`,
     sql`SELECT week_index, amount::float8 AS amount FROM week_budgets WHERE month = ${month}`,
     sql`
@@ -58,6 +59,10 @@ export default async function Dashboard({
       FROM expenses e LEFT JOIN users u ON u.id = e.user_id
       WHERE e.spent_on BETWEEN ${first} AND ${last}
       ORDER BY e.spent_on DESC, e.id DESC`,
+    sql`SELECT
+          (SELECT count(*)::int FROM bank_transactions WHERE user_id = ${me.id} AND status = 'NEEDS_REVIEW')
+          + (SELECT count(*)::int FROM gmail_messages WHERE user_id = ${me.id} AND processing_status = 'PARSE_FAILED')
+          AS count`,
   ])
   const expenses = expenseRows as Expense[]
 
@@ -96,6 +101,12 @@ export default async function Dashboard({
             <Link href={`/?m=${shiftMonth(month, 1)}`} aria-label="Next month">›</Link>
           </div>
         </div>
+
+        {review.count > 0 && (
+          <Link href="/review" className="alert ok" style={{ display: 'block', marginBottom: 12 }}>
+            {review.count} bank transaction{review.count === 1 ? '' : 's'} need{review.count === 1 ? 's' : ''} review →
+          </Link>
+        )}
 
         <section className="card stack">
           <div className="summary">

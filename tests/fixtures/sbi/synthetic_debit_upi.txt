@@ -1,0 +1,11 @@
+From: SBI Test <alerts@example.sbi.co.in>
+Subject: Transaction alert for your account
+Date: Fri, 02 Oct 2026 19:05:00 +0530
+
+Dear Customer,
+
+Your A/C XXXXX1234 has a debit by transfer of Rs 450.00 on 02Oct26.
+Trf to SWIGGY Ref No 612345678901.
+
+Available balance Rs 10,250.00.
+If not done by you, call the bank immediately.

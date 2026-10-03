@@ -1,0 +1,5 @@
+From: HDFC Test <alerts@example.hdfcbank.net>
+Subject: Alert : Update on your HDFC Bank Credit Card
+Date: Thu, 01 Oct 2026 18:43:00 +0530
+
+Thank you for using your HDFC Bank Credit Card ending 5678 for Rs 1,299.00 at AMAZON PAY INDIA on 2026-10-01 18:42:10.
